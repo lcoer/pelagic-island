@@ -14,8 +14,8 @@
   <meta name="description" content="程序化生成的实时 3D 热带海岛。让风、浪和时间慢下来。" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%23172c30'/%3E%3Cpath d='M7 23q7-12 13 0t13 0M7 29q7-12 13 0t13 0' fill='none' stroke='%23dfc7a2' stroke-width='2'/%3E%3C/svg%3E" />
   <title>PELAGIC · 潮汐之外</title>
-  <script type="module" crossorigin src="./assets/index-DT3XU0DD.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DKxueIhh.css">
+  <script type="module" crossorigin src="./assets/index-BEMi4a6B.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-Bm7oKP4L.css">
 </head>
 <body>
   <div id="world" aria-label="可交互的三维热带海岛场景"></div>
@@ -24,7 +24,7 @@
   <div id="interface">
     <header>
       <a class="brand" href="./" aria-label="PELAGIC 首页"><svg viewBox="0 0 38 38" fill="none"><path d="M4 19c5-9 10-9 15 0s10 9 15 0M4 27c5-9 10-9 15 0s10 9 15 0" stroke="currentColor" stroke-width="1.5"/></svg><span>PELAGIC<small>一座岛，一整个世界。</small></span></a>
-      <div class="top-right"><span class="live"><i></i> 实时生成 <b id="fps">— FPS</b></span><button class="icon-btn" id="fullscreen" title="切换全屏" aria-label="切换全屏"><svg viewBox="0 0 24 24"><path d="M8 4H4v4m12-4h4v4M4 16v4h4m12-4v4h-4"/></svg></button></div>
+      <div class="top-right"><span class="live"><i></i> 实时生成 <b id="fps">— FPS</b></span><div class="sound-controls"><button class="icon-btn" id="sound" title="开启海浪与风声" aria-label="开启海浪与风声" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4Z"/><path id="sound-waves" d="m16 9 5 6m0-6-5 6"/></svg></button><input id="sound-volume" type="range" min="0" max="100" step="1" value="55" aria-label="环境音量" title="环境音量 55%" /></div><button class="icon-btn" id="fullscreen" title="切换全屏" aria-label="切换全屏"><svg viewBox="0 0 24 24"><path d="M8 4H4v4m12-4h4v4M4 16v4h4m12-4v4h-4"/></svg></button></div>
     </header>
     <div class="place-tag"><span class="tag-line"></span> 印度洋 · 无名环礁 <span class="coordinates">04°17′ S &nbsp; 73°31′ E · 虚构坐标</span></div>
     <section class="story"><span class="eyebrow">AN ISLAND OUT OF TIME</span><h1>潮汐之外<span>让世界，慢一点。</span></h1><p>风掠过棕榈，日光沉入海平面。<br>此刻，你只需要在这里。</p><button id="tour" aria-pressed="false"><span class="play-icon">▷</span><span id="tour-label">环岛漫游</span><span class="arrow">↗</span></button></section>
