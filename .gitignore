@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.npm-cache/
+test-results/
+*.log
+PELAGIC-island.zip
+海岛-双击打开.html
+.tools/
