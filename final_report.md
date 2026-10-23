@@ -2,6 +2,12 @@
 
 项目：PELAGIC · 潮汐之外。
 
+公开网站：https://lcoer.github.io/pelagic-island/
+
+公开源码：https://github.com/lcoer/pelagic-island
+
+main 分支保存源码，gh-pages 分支发布静态网站。GitHub Pages 已完成部署。
+
 已交付完整源码、锁定依赖版本、生产构建、中文说明、一键启动脚本、设计与计划、技能和 GitHub 参考，以及单元和浏览器测试。
 
 直接双击“海岛-双击打开.html”运行离线场景，或通过“启动海岛.cmd” / `npm run dev` 进入开发模式。

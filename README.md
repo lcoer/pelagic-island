@@ -1,5 +1,7 @@
 # PELAGIC · 潮汐之外
 
+**[在线体验](https://lcoer.github.io/pelagic-island/)** · [公开源码](https://github.com/lcoer/pelagic-island)
+
 ## GitHub Pages 发布
 
 `main` 保存源代码，`gh-pages` 保存 `npm run build` 生成的 `dist/` 内容。仓库 Settings → Pages 的发布来源为 **Deploy from a branch → gh-pages → / (root)**。更新源码后重新构建并发布产物分支，GitHub Pages 会自动部署该分支。`vite.config.js` 使用相对资源路径，适配 `https://用户名.github.io/仓库名/`。

@@ -38,3 +38,9 @@ SwiftShader 软件渲染用于功能和 GLSL 编译验证，截图上的 FPS 是
 - 人工检查 test-results/boat-drag-wake.png 与 boat-mobile.png，确认船体、布帆、船尾泡沫与拖动提示可见，手机面板不遮挡默认小船。
 
 代码检查：CPU 浮力与 GLSL 从同一份波谱生成；浮点尾流纹理接入顶点、法线与泡沫，固定网格保持内存有界；指针捕获与取消路径恢复 OrbitControls。船只与海岛之间使用连续海面边界检查。没有新增外部图片或模型。
+
+## 公开发布
+
+GitHub 账户 lcoer 的公开仓库 pelagic-island 已创建并上传。源码分支 main，网站分支 gh-pages；GitHub Pages 返回 built，source=gh-pages:/，公开地址为 https://lcoer.github.io/pelagic-island/。
+
+发布前 `npm test` 六项通过，生产构建通过；Vite base 改为相对路径以支持仓库子路径，npm 缓存路径改为项目相对目录以支持其他系统。本地依赖、缓存、临时文件及 CLI 工具未上传。
