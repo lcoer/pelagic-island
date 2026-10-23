@@ -44,3 +44,12 @@ SwiftShader 软件渲染用于功能和 GLSL 编译验证，截图上的 FPS 是
 GitHub 账户 lcoer 的公开仓库 pelagic-island 已创建并上传。源码分支 main，网站分支 gh-pages；GitHub Pages 返回 built，source=gh-pages:/，公开地址为 https://lcoer.github.io/pelagic-island/。
 
 发布前 `npm test` 六项通过，生产构建通过；Vite base 改为相对路径以支持仓库子路径，npm 缓存路径改为项目相对目录以支持其他系统。本地依赖、缓存、临时文件及 CLI 工具未上传。
+
+## 程序化环境音检查
+
+新增 src/ambience.js：五层海浪 / 水声 / 海涌 / 风声，右上角开关和音量。首次用户点击才创建 AudioContext，增益与滤波平滑过渡；暂停或隐藏时淡出并 suspend，音量保存在 localStorage。兼容缺少 cancelAndHoldAtTime 的实现。
+
+- 单元测试共 8 项通过，新增天气混音连续性、噪声幅值、直流与循环接缝测试。
+- `npm run test:sound` 通过：实际输出非静音，音量零时停止，调节后恢复，暂停 / 继续，重复开关只使用同一组 5 个声源，移动端控件与离线文件可用；控制台错误数为 0。
+- 同一生产声源图离线合成 14 秒：RMS 约 0.089，峰值约 0.466（低于数字满幅 1），左右通道有差异。该检查验证信号输出和余量，不代替真实扬声器或耳机的主观听感。
+- 生产构建与独立 HTML 生成成功。未使用外部音频文件。

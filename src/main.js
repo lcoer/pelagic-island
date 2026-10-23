@@ -9,6 +9,7 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 import { createIsland, createBirds } from './island.js';
 import { createInteractiveBoat } from './boat.js';
+import { SeaAmbience } from './ambience.js';
 import { skyVertex, skyFragment, oceanVertex, oceanFragment } from './shaders.js';
 import { clamp, damp, createRandom, weatherPreset } from './world.js';
 import './style.css';
@@ -24,6 +25,7 @@ window.addEventListener('error',e=>{if($('loading')&&!$('loading').classList.con
 try { init(); } catch(error){ fail(error); }
 
 function init(){
+  const ambience=new SeaAmbience();
   const renderer = new THREE.WebGLRenderer({antialias:false,alpha:false,powerPreference:'high-performance'});
   renderer.setSize(innerWidth,innerHeight);
   renderer.setPixelRatio(Math.min(devicePixelRatio,1.25));
@@ -34,7 +36,7 @@ function init(){
   renderer.domElement.tabIndex=0;
   renderer.domElement.setAttribute('aria-label','三维海岛，拖动旋转视角，滚轮缩放，右键平移');
   $('world').appendChild(renderer.domElement);
-  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();state.paused=true;toast('图形上下文已丢失，请刷新页面重新进入海岛。');});
+  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();state.paused=true;ambience.setPaused(true);toast('图形上下文已丢失，请刷新页面重新进入海岛。');});
 
   const scene=new THREE.Scene();scene.fog=new THREE.FogExp2('#b0b7ad',.0025);
   const camera=new THREE.PerspectiveCamera(44,innerWidth/innerHeight,.2,3000);
@@ -142,6 +144,21 @@ function init(){
   const descriptions={clear:'落日微风 · 温柔涌浪',storm:'暴雨将至 · 风起浪涌',night:'月光如水 · 灯塔守望'};
   function updateRange(el){const min=Number(el.min),max=Number(el.max);el.style.setProperty('--fill',`${(Number(el.value)-min)/(max-min)*100}%`);}
   const ranges=[...document.querySelectorAll('input[type=range]')];ranges.forEach(el=>{updateRange(el);el.addEventListener('input',()=>updateRange(el));});
+  function updateSoundUI(){
+    const enabled=ambience.enabled,audible=enabled&&ambience.volume>0;
+    $('sound').setAttribute('aria-pressed',String(enabled));
+    const label=enabled?'关闭海浪与风声':'开启海浪与风声';$('sound').setAttribute('aria-label',label);$('sound').title=label;
+    $('sound-waves').setAttribute('d',audible?'M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14':'m16 9 5 6m0-6-5 6');
+    $('sound-volume').title=`环境音量 ${Math.round(ambience.volume*100)}%`;
+  }
+  $('sound-volume').value=Math.round(ambience.volume*100);updateRange($('sound-volume'));updateSoundUI();
+  $('sound').addEventListener('click',async()=>{
+    $('sound').disabled=true;
+    try{await ambience.setEnabled(!ambience.enabled);toast(ambience.enabled?'海浪与风声已开启':'环境音已关闭');}
+    catch{await ambience.setEnabled(false);toast('声音未能开启，请检查浏览器声音权限后重试');}
+    finally{$('sound').disabled=false;updateSoundUI();}
+  });
+  $('sound-volume').addEventListener('input',()=>{void ambience.setVolume(Number($('sound-volume').value)/100).catch(()=>{});updateSoundUI();});
   function selectWeather(value){
     const p=weatherPreset(value);state.weather=value;hourTarget=p.hour;stormTarget=p.storm;windTarget=p.wind;wavesTarget=p.waves;seekingTime=true;
     $('cycle').checked=false;state.cycle=false;
@@ -158,7 +175,7 @@ function init(){
   $('quality').addEventListener('change',e=>{setQuality(e.target.value);toast(`已切换${e.target.selectedOptions[0].text}画质`);});
   function toggleTour(force){state.tour=force??!state.tour;controls.autoRotate=state.tour;$('tour').setAttribute('aria-pressed',String(state.tour));$('tour-label').textContent=state.tour?'停止漫游':'环岛漫游';}
   $('tour').addEventListener('click',()=>toggleTour());
-  function togglePause(){state.paused=!state.paused;$('pause').textContent=state.paused?'▷':'Ⅱ';$('pause').setAttribute('aria-label',state.paused?'继续动画':'暂停动画');toast(state.paused?'时间已暂停，仍可自由探索':'时间继续流动');}
+  function togglePause(){state.paused=!state.paused;ambience.setPaused(state.paused);$('pause').textContent=state.paused?'▷':'Ⅱ';$('pause').setAttribute('aria-label',state.paused?'继续动画':'暂停动画');toast(state.paused?'时间已暂停，仍可自由探索':'时间继续流动');}
   $('pause').addEventListener('click',togglePause);
   $('reset').addEventListener('click',()=>{
     toggleTour(false);
@@ -218,7 +235,7 @@ function init(){
   let elapsed=0,frames=0,fpsElapsed=0,firstFrame=true;
   // A read-only inspection hook supports reproducible smoke tests and makes
   // the delivered demo easier to debug without adding a development GUI.
-  window.__PELAGIC__={get state(){return {...state};},get diagnostics(){return {calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,programs:renderer.info.programs?.length,camera:camera.position.toArray(),time:elapsed,boat:boatSystem.inspect()};}};
+  window.__PELAGIC__={get state(){return {...state};},get diagnostics(){return {calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,programs:renderer.info.programs?.length,camera:camera.position.toArray(),time:elapsed,boat:boatSystem.inspect(),audio:ambience.inspect()};}};
 
   renderer.setAnimationLoop(()=>{
     timer.update();const rawDelta=timer.getDelta(),dt=Math.min(rawDelta,.05);
@@ -241,6 +258,7 @@ function init(){
     // Keep the camera above the water even after a large pan.
     if(camera.position.y<1.4)camera.position.y=1.4;
     boatSystem.update(state.paused?0:dt,elapsed);boatSystem.updateLabel();
+    ambience.updateEnvironment({wind:state.wind,waves:state.waves,storm:state.storm,distance:Math.max(0,Math.hypot(camera.position.x,camera.position.z)-27)});
     renderer.info.reset();composer.render();
     frames++;fpsElapsed+=rawDelta;
     if(fpsElapsed>=.8){$('fps').textContent=`${Math.round(frames/fpsElapsed)} FPS`;frames=0;fpsElapsed=0;}
